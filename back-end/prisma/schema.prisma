@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User{
+  id Int @default(autoincrement()) @id
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  email String @unique
+  password String
+  name String @unique
+
+  orders Order[]
+  favorites Product[]
+  reviews Review[]
+}
+
+model Product{
+  id Int @default(autoincrement()) @id
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String
+  description String
+
+  price Int
+  
+  categoryId Int? @map("category_id")
+  userId Int? @map("user_id")
+
+  OrderItems OrderItem[]
+  category Category? @relation(fields: [categoryId],references: [id])
+
+  user User? @relation(fields: [userId],references: [id])
+  reviews Review[]
+}
+
+model Category{
+  id Int @default(autoincrement()) @id
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  products Product[]
+}
+
+model Review{
+  id Int @default(autoincrement()) @id
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rating Int
+  text String
+
+  userId Int @map("user_id")
+  productId Int @map("product_id")
+
+  product Product @relation(fields: [productId],references: [id])
+  user User @relation(fields: [userId],references: [id])
+}
+
+model Order{
+  id Int @default(autoincrement()) @id
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  status EnumOrderStatus @default(PENDING)
+  userId Int @map("user_id")
+
+  user User @relation(fields: [userId],references: [id])
+  items OrderItem[]
+}
+
+model OrderItem{
+  id Int @default(autoincrement()) @id
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  quantity Int
+  price Int
+
+  orderId Int? @map("order_id")
+  productId Int @map("product_id")
+
+  order Order? @relation(fields: [orderId],references: [id])
+  product Product @relation(fields: [productId],references: [id])
+
+  @@map("Order_item")
+}
+
+enum EnumOrderStatus {
+  PENDING
+  PAYED
+  SHIPPED
+  DELIVERED
+}
