@@ -15,5 +15,5 @@ export class GetAllProductDto extends PaginationDto{
 
     @IsOptional()
     @IsString()
-    searchTerm:string
+    searchTerm?:string
 }
