@@ -3,7 +3,10 @@ import { Prisma } from '@prisma/client'
 import { EnumProductSort, GetAllProductDto } from 'src/dto/get-all-product.dto'
 import { PaginationService } from 'src/pagination/pagination.service'
 import { PrismaService } from 'src/prisma.service'
-import { productReturnObject } from './../returnObject/return-product.object'
+import {
+	productReturnFullestObject,
+	productReturnObject
+} from './../returnObject/return-product.object'
 import { ProductDto } from 'src/dto/product.dto'
 import { generateSlug } from 'src/utils/slug-generate'
 
@@ -18,7 +21,8 @@ export class ProductService {
 		const { sort, searchTerm } = dto
 
 		const prismaSort: Prisma.ProductOrderByWithRelationInput[] = []
-		if (sort === EnumProductSort.HIGH_PRICE) {
+	
+        if (sort === EnumProductSort.HIGH_PRICE) {
 			prismaSort.push({ price: 'desc' })
 		} else if (sort == EnumProductSort.LOW_PRICE) {
 			prismaSort.push({ price: 'asc' })
@@ -27,7 +31,8 @@ export class ProductService {
 		} else {
 			prismaSort.push({ price: 'asc' })
 		}
-		const prismaSearchTernFilter: Prisma.ProductWhereInput = searchTerm
+	
+        const prismaSearchTernFilter: Prisma.ProductWhereInput = searchTerm
 			? {
 					OR: [
 						{
@@ -67,7 +72,7 @@ export class ProductService {
 	async byId(id: number) {
 		const product = await this.prisma.product.findUnique({
 			where: { id },
-			select: productReturnObject
+			select: productReturnFullestObject
 		})
 		if (!product) throw new NotFoundException('Product not found')
 
@@ -77,7 +82,7 @@ export class ProductService {
 	async bySlug(slug: string) {
 		const product = await this.prisma.product.findUnique({
 			where: { slug },
-			select: productReturnObject
+			select: productReturnFullestObject
 		})
 		if (!product) throw new NotFoundException('Product not found')
 
@@ -92,7 +97,8 @@ export class ProductService {
 
 		return product
 	}
-	async create(dto: ProductDto) {
+	
+    async create(dto: ProductDto) {
 		const product = await this.prisma.product.create({
 			data: {
 				name: dto.name,
@@ -104,7 +110,8 @@ export class ProductService {
 
 		return product.id
 	}
-	async update(id: number, dto: ProductDto) {
+	
+    async update(id: number, dto: ProductDto) {
 		const { name, price, description, categoryId } = dto
 
 		return this.prisma.product.update({
@@ -118,10 +125,12 @@ export class ProductService {
 			}
 		})
 	}
-	async delete(id: number) {
+	
+    async delete(id: number) {
 		return this.prisma.product.delete({ where: { id } })
 	}
-	async getSimilar(id: number) {
+	
+    async getSimilar(id: number) {
 		const currentProduct = await this.byId(id)
 
 		if (!currentProduct)

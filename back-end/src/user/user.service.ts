@@ -6,7 +6,7 @@ import {
 import { Prisma } from '@prisma/client'
 import { hash } from 'argon2'
 import { UserDto } from 'src/dto/user.dto'
-import { GetUser } from 'src/getUser.service'
+import { GetUser } from 'src/get-user.service'
 import { PrismaService } from 'src/prisma.service'
 import { returnUserObject } from 'src/returnObject/return-user.object'
 

@@ -10,7 +10,7 @@ import { faker } from '@faker-js/faker'
 import { hash, verify } from 'argon2'
 import { JwtService } from '@nestjs/jwt'
 import { User } from '@prisma/client'
-import { GetUser } from 'src/getUser.service'
+import { GetUser } from 'src/get-user.service'
 
 @Injectable()
 export class AuthService {
