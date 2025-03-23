@@ -21,15 +21,27 @@ export class ReviewService {
 				user: { connect: { id: userId } }
 			}
 		})
-        return {message:'successful', review}
+		return { message: 'successful', review }
 	}
 
-	async getAvaregeValueByProductId(productId: number) {
+	async getAverageValueByProductId(productId: number) {
 		return this.prisma.review
 			.aggregate({
 				where: { product_id: productId },
 				_avg: { rating: true }
 			})
 			.then(data => data._avg)
+	}
+
+	async update(id: number, dto: ReviewDto) {
+		const review = this.prisma.review.update({
+			where: { id },
+			data: { text: dto.text, rating: dto.rating }
+		})
+		return { message: 'successful', review }
+	}
+
+	async delete(id: number) {
+		return this.prisma.review.delete({ where: { id } })
 	}
 }
